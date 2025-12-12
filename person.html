@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Person List | 223Phranakorn</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-start:#000;
+      --bg-end:#1a1a1a;
+      --font:'Kanit',sans-serif;
+      --text:#fff;
+      --accent:#ff4d4d;
+      --link:#00aaff;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+      font-family:var(--font);
+      color:var(--text);
+      background:linear-gradient(135deg,var(--bg-start),var(--bg-end));
+      overflow-x:hidden;
+    }
+
+    /* Background blur */
+    body::before{
+      content:"";
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:url("https://img2.pic.in.th/pic/595838275_122102166585150564_5632778969365209816_n.jpg") center/cover no-repeat;
+      opacity:0.12;
+      z-index:-1;
+    }
+
+    header{
+      text-align:center;
+      padding:40px 20px 10px;
+      font-size:2.3rem;
+      font-weight:700;
+      background:linear-gradient(90deg,#fff,#999,#fff);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation:shine 4s ease infinite;
+    }
+    @keyframes shine{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    /* Search box */
+    .search-box{
+      width:90%; max-width:500px;
+      margin:20px auto;
+      display:flex; align-items:center;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:50px;
+      padding:10px 20px;
+      backdrop-filter:blur(8px);
+    }
+    .search-box i{margin-right:10px;font-size:1.4rem;color:#aaa;}
+    .search-box input{
+      flex:1;
+      background:none;
+      border:none;
+      outline:none;
+      color:white;
+      font-size:1rem;
+    }
+
+    .container{width:90%; max-width:1100px; margin:30px auto 100px;}
+
+    section{
+      margin-top:40px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px;
+      padding:25px;
+      backdrop-filter:blur(10px);
+    }
+
+    h2{
+      margin-bottom:10px;
+      font-size:1.5rem;
+      border-left:4px solid #fff;
+      padding-left:10px;
+    }
+    .leader h2{border-color:var(--accent);}
+
+    .list{display:flex;flex-wrap:wrap;gap:20px;}
+
+    .card{
+      width:180px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px;
+      text-align:center;
+      padding:15px;
+      transition:.3s;
+    }
+    .card:hover{
+      background:rgba(255,255,255,0.12);
+      transform:translateY(-5px);
+    }
+
+    .profile{
+      width:80px; height:80px;
+      border-radius:50%;
+      object-fit:cover;
+      margin-bottom:10px;
+    }
+
+    a{color:var(--link);}
+
+    .no-result{
+      text-align:center;
+      margin-top:30px;
+      font-size:1.2rem;
+      opacity:0.7;
+      display:none;
+    }
+
+    /* Music Player */
+    #music-player-container{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      z-index:999;
+    }
+    #player-box{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:12px 18px;
+      background:rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:14px;
+      backdrop-filter:blur(12px);
+    }
+    #player-btn{
+      font-size:1.8rem;
+      background:none;
+      border:none;
+      color:white;
+      cursor:pointer;
+    }
+    #volume-slider{
+      width:120px;
+    }
+
+    footer{
+      text-align:center;
+      padding:15px;
+      color:#aaa;
+      margin-top:50px;
+    }
+  </style>
+</head>
+<body>
+
+<header>Person List</header>
+
+<!-- Search -->
+<div class="search-box">
+  <i class='bx bx-search'></i>
+  <input type="text" id="searchInput" placeholder="ค้นหารายชื่อ...">
+</div>
+
+<div class="container">
+
+  <div id="no-result" class="no-result">❌ No members found</div>
+
+  <section class="founder"><h2>Founder</h2><div class="list" id="founderList"></div></section>
+  <section class="leader"><h2>Leader</h2><div class="list" id="leaderList"></div></section>
+  <section class="support"><h2>Support</h2><div class="list" id="supportList"></div></section>
+  <section class="vvip"><h2>VVIP</h2><div class="list" id="vvipList"></div></section>
+  <section class="vip"><h2>VIP</h2><div class="list" id="vipList"></div></section>
+  <section class="member"><h2>Member</h2><div class="list" id="memberList"></div></section>
+
+</div>
+
+<footer>© 2025 Dekbangtlez quint and Khaijexw — All rights reserved.</footer>
+
+<!-- Music Player -->
+<div id="music-player-container">
+  <div id="player-box">
+    <button id="player-btn"><i class='bx bx-play'></i></button>
+    <span>Background Music</span>
+    <i class='bx bx-volume-full' style="font-size:1.3rem;"></i>
+    <input type="range" id="volume-slider" min="0" max="100" value="75">
+  </div>
+</div>
+
+<audio id="bg-music" preload="auto"></audio>
+
+
+<!-- =====================================================================================
+                                    SCRIPT ใหม่ทั้งหมด
+====================================================================================== -->
+<script>
+
+const defaultImage = "https://i.ibb.co/6cdCKMRm/LOGO.png";
+
+/* โหลดรายชื่อ */
+fetch("person.json")
+  .then(res => res.json())
+  .then(data => {
+
+    const founderList = document.getElementById("founderList");
+    const leaderList = document.getElementById("leaderList");
+    const supportList = document.getElementById("supportList");
+    const vvipList = document.getElementById("vvipList");
+    const vipList = document.getElementById("vipList");
+    const memberList = document.getElementById("memberList");
+
+    function createCard(person, crown = false){
+      const img = person.image?.trim() ? person.image : defaultImage;
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <img src="${img}" class="profile">
+        <h3>${person.name}${crown ? ' <i class="bx bx-crown"></i>' : ''}</h3>
+        <a href="${person.facebook}" target="_blank">Facebook</a>
+      `;
+      return card;
+    }
+
+    data.filter(x=>x.permission==="founder").forEach(x=>founderList.appendChild(createCard(x,true)));
+    data.filter(x=>x.permission==="leader").forEach(x=>leaderList.appendChild(createCard(x,true)));
+    data.filter(x=>x.permission==="support").forEach(x=>supportList.appendChild(createCard(x)));
+    data.filter(x=>x.permission==="vvip").forEach(x=>vvipList.appendChild(createCard(x)));
+    data.filter(x=>x.permission==="vip").forEach(x=>vipList.appendChild(createCard(x)));
+    data.filter(x=>x.permission==="member").forEach(x=>memberList.appendChild(createCard(x)));
+
+    /* SEARCH */
+    const searchInput = document.getElementById("searchInput");
+    const noResult = document.getElementById("no-result");
+
+    searchInput.addEventListener("input", ()=>{
+
+      const key = searchInput.value.toLowerCase().trim();
+      let count = 0;
+
+      document.querySelectorAll("section").forEach(sec=>{
+        const cards = sec.querySelectorAll(".card");
+        let show = 0;
+
+        cards.forEach(card=>{
+          const name = card.querySelector("h3").innerText.toLowerCase();
+          if(name.includes(key)){
+            card.style.display="";
+            show++; count++;
+          } else {
+            card.style.display="none";
+          }
+        });
+
+        sec.style.display = show>0 ? "block" : "none";
+      });
+
+      noResult.style.display = count === 0 ? "block" : "none";
+    });
+
+  });
+
+
+
+
+/* ========================
+        MUSIC PLAYER
+======================== */
+const audio = document.getElementById("bg-music");
+const playBtn = document.getElementById("player-btn");
+const playIcon = playBtn.querySelector("i");
+const volumeSlider = document.getElementById("volume-slider");
+
+audio.src = "bg.mp3";
+audio.volume = 0.6;
+audio.muted = true;  // ต้อง mute เพื่อให้ autoplay ทำงาน
+
+let isPlaying = false;
+
+/* เล่นทันที (muted autoplay) */
+window.addEventListener("load", () => {
+  audio.play().then(() => {
+    // เล่นสำเร็จแบบ muted
+    isPlaying = true;
+    playIcon.className = "bx bx-pause";
+  }).catch(() => {
+    // ถ้ายังไม่เล่น ให้รอ user คลิกครั้งแรก
+    isPlaying = false;
+    playIcon.className = "bx bx-play";
+  });
+});
+
+/* ปลด mute เมื่อผู้ใช้คลิกที่หน้าเว็บครั้งแรก */
+document.addEventListener("pointerdown", function startAudio() {
+  if (audio.muted) {
+    audio.muted = false;
+    audio.play();
+    isPlaying = true;
+    playIcon.className = "bx bx-pause";
+  }
+  document.removeEventListener("pointerdown", startAudio);
+});
+
+/* ปุ่ม play/pause */
+playBtn.onclick = () => {
+  if (!isPlaying) {
+    audio.muted = false;
+    audio.play();
+    playIcon.className = "bx bx-pause";
+    isPlaying = true;
+  } else {
+    audio.pause();
+    playIcon.className = "bx bx-play";
+    isPlaying = false;
+  }
+};
+
+/* ปรับเสียง */
+volumeSlider.oninput = () => {
+  audio.volume = volumeSlider.value / 100;
+};
+
+</script>
+
+</body>
+</html>
